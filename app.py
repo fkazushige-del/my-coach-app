@@ -47,6 +47,7 @@ def add_data_and_get_advice(time_str, weight, content):
         recent_logs = logs[-6:]
         
         # 3. Geminiに相談
+        # ★ここが修正ポイント：gemini-pro から gemini-1.5-flash になっています（OK！）
         model = genai.GenerativeModel('gemini-1.5-flash')
         
         full_prompt = f"""
@@ -83,4 +84,3 @@ if st.button("送信 🚀"):
             st.success("完了！")
 
             st.info(advice)
-
