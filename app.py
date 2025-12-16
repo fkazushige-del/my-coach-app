@@ -47,7 +47,7 @@ def add_data_and_get_advice(time_str, weight, content):
         recent_logs = logs[-6:]
         
         # 3. Geminiに相談
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         full_prompt = f"""
         【役割】{prompt_cell}
@@ -81,4 +81,5 @@ if st.button("送信 🚀"):
         with st.spinner('通信中...'):
             advice = add_data_and_get_advice(input_time, input_weight, input_content)
             st.success("完了！")
+
             st.info(advice)
