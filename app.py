@@ -83,3 +83,4 @@ if st.button("送信 🚀"):
             st.success("完了！")
 
             st.info(advice)
+
