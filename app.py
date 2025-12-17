@@ -7,7 +7,6 @@ import datetime
 # ==========================================
 # 1. APIキーの設定 (Secretsから読み込む)
 # ==========================================
-# Streamlit Cloudの金庫からキーを取り出す
 GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 genai.configure(api_key=GOOGLE_API_KEY)
 
@@ -23,10 +22,10 @@ scopes = [
 
 def add_data_and_get_advice(time_str, weight, content):
     try:
-        # 金庫からJSONの中身（辞書データ）を取り出す
+        # 金庫からJSONの中身を取り出す
         key_dict = dict(st.secrets["gcp_service_account"])
         
-        # 辞書データを使って認証する
+        # 認証
         creds = Credentials.from_service_account_info(key_dict, scopes=scopes)
         gc = gspread.authorize(creds)
         sh = gc.open(SPREADSHEET_NAME)
@@ -47,14 +46,14 @@ def add_data_and_get_advice(time_str, weight, content):
         recent_logs = logs[-6:]
         
         # 3. Geminiに相談
-        # ★ここが修正ポイント：gemini-pro から gemini-1.5-flash になっています（OK！）
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # ★ここを 'gemini-1.5-pro' に変更しました！（深く思考するモデル）
+        model = genai.GenerativeModel('gemini-1.5-pro')
         
         full_prompt = f"""
         【役割】{prompt_cell}
         【履歴】{recent_logs}
         【今回】日付:{today}, 時間:{time_str}, 体重:{weight}, 内容:{content}
-        上記を踏まえてフィードバックとアクションプランをください。
+        上記を踏まえて、深く洞察し、具体的かつ論理的なフィードバックとアクションプランを提示してください。
         """
         
         response = model.generate_content(full_prompt)
@@ -66,8 +65,8 @@ def add_data_and_get_advice(time_str, weight, content):
 # ==========================================
 # 3. アプリ画面
 # ==========================================
-st.title("🏃‍♂️ My AI Coach (Mobile)")
-st.write("外出先から報告！")
+st.title("🧠 My AI Coach (Pro Mode)")
+st.write("Proモデルが深く思考中...")
 
 col1, col2 = st.columns(2)
 with col1:
@@ -79,7 +78,8 @@ input_content = st.text_area("インプット内容")
 
 if st.button("送信 🚀"):
     if input_time and input_weight and input_content:
-        with st.spinner('通信中...'):
+        # スピナーのメッセージも変更
+        with st.spinner('Gemini Proが深く思考しています...（少々お待ちください）'):
             advice = add_data_and_get_advice(input_time, input_weight, input_content)
             st.success("完了！")
 
